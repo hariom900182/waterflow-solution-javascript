@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>waterflow</title>
+	<style type="text/css">
+		#container{
+			width: 300px;
+			height: 300px;
+			border: 1px solid gray;
+		}
+		.row{
+			width: 49px;
+			height: 300px;
+			border-right: 1px solid gray;
+			float: left;
+		}
+		.cell {
+			width: 49px;
+			height: 49px;
+			border-bottom: 1px solid gray;
+			/* float: left; */
+		}
+		.blocker{
+			background-color: black;
+			opacity: 0.3;
+		}
+		.water{
+			background-color: lightblue;
+			opacity: 0.5;
+		}
+	</style>
+</head>
+<body>
+	<h1>Water flow</h1>
+	<div id="container">
+		
+	</div>
+	<div style="margin-top: 10px;">
+		<button id="startBtn">Start simulation</button>
+		
+	</div>
+</body>
+<script type="text/javascript">
+	var container = document.getElementById("container");
+	var startBtn = document.getElementById("startBtn");
+	var rows = 6;
+	var cols = 6;
+	var blockers = ['cell_22','cell_33','cell_13'];
+	//var counter =0;
+	var entryRow= 2;
+	var entryCol = 0;
+	for(var i=0;i<rows;i++){
+		var rEl = document.createElement("div");
+		rEl.setAttribute("class","row");
+		rEl.setAttribute("id","row"+i.toString());
+		for(var j=0;j<cols;j++){
+			
+			var cEl = document.createElement("div");
+			cEl.setAttribute("id",'cell_'+i+j);
+			//cEl.innerText='cell_'+i+j;
+			if(blockers.indexOf('cell_'+i+j) >= 0){
+				cEl.setAttribute("class","cell blocker");
+			}else {
+				cEl.setAttribute("class","cell");
+			}
+			rEl.append(cEl);
+			//counter= counter+
+		}
+		container.append(rEl);
+	}
+	function runSimulator(row,col){
+		if(row >= rows || col > cols || row < 0 || col < 0 ) return;
+		var el =document.getElementById('cell_'+row+col);
+		if(!el) return;
+		setTimeout(function(){
+
+			var classText = el.classList.toString();
+			if(classText.includes("blocker")){
+				var eLC =document.getElementById('cell_'+(row+1)+(col-1));
+				var eRC =document.getElementById('cell_'+(row-1)+(col-1));
+				if(!eRC.classList.toString().includes("blocker"))
+					runSimulator(row-1,col);
+				if(!eLC.classList.toString().includes("blocker"))
+					runSimulator(row+1,col);
+			} 
+			else {
+				el.classList.add("water");
+				runSimulator(row,col+1);
+			}
+		},400);
+		
+		
+	}
+	startBtn.onclick= function(){
+		runSimulator(entryRow,entryCol);
+	}
+</script>
+</html>
